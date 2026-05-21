@@ -1,0 +1,10 @@
+{
+  "name": "voting-system",
+  "version": "1.0.0",
+  "description": "Voting system with MySQL and Twilio OTP",
+  "dependencies": [
+    "cpr",
+    "nlohmann-json"
+  ]
+}
+

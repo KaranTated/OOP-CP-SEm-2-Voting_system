@@ -1,0 +1,268 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is not the case, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{url}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\begin{document}
+
+\title{An Object-Oriented Design Approach for Secure Electronic Voting System with Two-Factor Authentication}
+
+\author{\IEEEauthorblockN{1\textsuperscript{st} Author Name}
+\IEEEauthorblockA{\textit{Department of Computer Science} \\
+\textit{University Name}\\
+City, Country \\
+email@university.edu}
+\and
+\IEEEauthorblockN{2\textsuperscript{nd} Author Name}
+\IEEEauthorblockA{\textit{Department of Computer Science} \\
+\textit{University Name}\\
+City, Country \\
+email2@university.edu}
+}
+
+\maketitle
+
+\begin{abstract}
+This paper presents the design and implementation of a secure electronic voting system using object-oriented programming principles in C++. The system integrates MySQL database management with Twilio's two-factor authentication (2FA) service to ensure secure user registration and voting processes. The implementation demonstrates key OOP concepts including inheritance, polymorphism, encapsulation, composition, and dependency injection. The system architecture employs an interface-based design pattern that allows for extensibility and maintainability. Experimental results demonstrate successful integration of database operations with external API services, achieving secure user authentication and vote recording functionality.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Object-Oriented Programming, Electronic Voting System, Two-Factor Authentication, Database Management, Software Design Patterns, C++
+\end{IEEEkeywords}
+
+\section{Introduction}
+Electronic voting systems have become increasingly important in modern democratic processes, requiring robust security mechanisms and reliable data management. Traditional voting systems face challenges related to authentication, data integrity, and system extensibility. This paper presents a comprehensive object-oriented solution that addresses these challenges through well-structured software design principles.
+
+The proposed system implements a secure voting platform that combines database persistence with two-factor authentication (2FA) via SMS-based one-time passwords (OTP). The system architecture leverages modern C++ features and object-oriented design patterns to create a maintainable, extensible, and secure voting application.
+
+The contributions of this work include:
+\begin{itemize}
+    \item A modular object-oriented architecture demonstrating inheritance and polymorphism
+    \item Integration of MySQL database with C++ using the MySQL Connector/C++
+    \item Implementation of two-factor authentication using Twilio Verify API
+    \item Application of dependency injection and interface segregation principles
+\end{itemize}
+
+\section{Related Work}
+Electronic voting systems have been extensively studied in the literature. Previous research has focused on cryptographic security \cite{ref1}, blockchain-based solutions \cite{ref2}, and usability aspects \cite{ref3}. However, limited attention has been given to the application of object-oriented design principles in voting system architecture.
+
+Database integration in C++ applications has been explored through various connectors and ORM frameworks. The MySQL Connector/C++ provides a native interface for database operations, while modern C++ features like smart pointers enable safe resource management \cite{ref4}.
+
+Two-factor authentication has become a standard security practice, with SMS-based OTP being widely adopted due to its accessibility. The Twilio Verify API provides a robust service for implementing 2FA in applications \cite{ref5}.
+
+\section{System Architecture and Design}
+
+\subsection{Object-Oriented Design Principles}
+The system architecture is built upon fundamental OOP principles:
+
+\subsubsection{Inheritance and Polymorphism}
+The system implements an abstract base class \texttt{IDatabaseService} that defines the interface for database operations. The concrete implementation \texttt{DatabaseService} inherits from this interface, enabling polymorphism. This design allows the \texttt{VotingApp} class to depend on the abstraction rather than concrete implementations, following the Dependency Inversion Principle.
+
+\begin{lstlisting}[language=C++, basicstyle=\small]
+class IDatabaseService {
+public:
+    virtual ~IDatabaseService() = default;
+    virtual bool open(...) = 0;
+    virtual bool userExists(const string &username) = 0;
+    virtual bool createUser(...) = 0;
+    // ... other pure virtual methods
+};
+
+class DatabaseService : public IDatabaseService {
+    // Concrete implementation using MySQL
+};
+\end{lstlisting}
+
+\subsubsection{Encapsulation}
+Each class encapsulates related functionality and data. The \texttt{DatabaseService} class encapsulates MySQL connection management and all database operations, hiding implementation details from client code. Similarly, \texttt{OtpService} encapsulates Twilio API interactions.
+
+\subsubsection{Composition}
+The \texttt{VotingApp} class demonstrates composition by containing references to \texttt{IDatabaseService} and \texttt{OtpService} objects. This "has-a" relationship allows the voting application to coordinate between database and authentication services.
+
+\subsubsection{Resource Management (RAII)}
+The system extensively uses \texttt{std::unique\_ptr} for automatic resource management, following the Resource Acquisition Is Initialization (RAII) principle. Database connections, statements, and result sets are automatically cleaned up when objects go out of scope.
+
+\subsection{System Components}
+
+\subsubsection{Database Service Layer}
+The \texttt{DatabaseService} class manages all database operations including:
+\begin{itemize}
+    \item Database and table creation
+    \item User registration and authentication
+    \item Vote recording and retrieval
+    \item Election results display
+\end{itemize}
+
+The implementation uses prepared statements to prevent SQL injection attacks and ensures data integrity through transaction management.
+
+\subsubsection{OTP Service Layer}
+The \texttt{OtpService} class handles two-factor authentication through Twilio's Verify API. It provides methods for:
+\begin{itemize}
+    \item Sending OTP codes via SMS
+    \item Verifying OTP codes entered by users
+    \item Error handling for API failures
+\end{itemize}
+
+\subsubsection{Application Layer}
+The \texttt{VotingApp} class orchestrates the voting workflow, coordinating between database and OTP services to implement:
+\begin{itemize}
+    \item User registration with OTP verification
+    \item User login and authentication
+    \item Vote casting with eligibility checks
+    \item Results display
+\end{itemize}
+
+\section{Implementation Details}
+
+\subsection{Technology Stack}
+The system is implemented using:
+\begin{itemize}
+    \item \textbf{C++17}: Modern C++ features including smart pointers, auto keyword, and lambda expressions
+    \item \textbf{MySQL 8.0+}: Relational database management system
+    \item \textbf{MySQL Connector/C++ 9.5}: Native C++ interface for MySQL
+    \item \textbf{CPR Library}: HTTP client library for REST API calls
+    \item \textbf{nlohmann/json}: JSON parsing library for API responses
+    \item \textbf{CMake}: Build system for cross-platform compilation
+    \item \textbf{vcpkg}: C++ package manager for dependency management
+\end{itemize}
+
+\subsection{Database Schema}
+The system uses two main tables:
+
+\textbf{Users Table:}
+\begin{itemize}
+    \item \texttt{username} (VARCHAR(50), PRIMARY KEY)
+    \item \texttt{phone} (VARCHAR(20), NOT NULL)
+    \item \texttt{password\_hash} (VARCHAR(128), NOT NULL)
+    \item \texttt{age} (INT, NOT NULL)
+    \item \texttt{has\_voted} (BOOLEAN, DEFAULT 0)
+\end{itemize}
+
+\textbf{Votes Table:}
+\begin{itemize}
+    \item \texttt{candidate} (VARCHAR(50), PRIMARY KEY)
+    \item \texttt{count} (INT, DEFAULT 0)
+\end{itemize}
+
+\subsection{Authentication Flow}
+The system implements a multi-step authentication process:
+
+\begin{enumerate}
+    \item \textbf{Registration}: User provides username, phone, password, and age. System sends OTP to phone number. Upon successful OTP verification, user account is created.
+    \item \textbf{Login}: User provides username and password. System verifies credentials and checks eligibility (age $\geq$ 18, not already voted). OTP is sent for 2FA verification.
+    \item \textbf{Voting}: After successful authentication, user selects a candidate and vote is recorded.
+\end{enumerate}
+
+\subsection{Polymorphism Implementation}
+Polymorphism is demonstrated through the interface-based design:
+
+\begin{lstlisting}[language=C++, basicstyle=\small]
+// In VotingApp class
+VotingApp(IDatabaseService &db, OtpService &otp) 
+    : db_(db), otp_(otp) {}
+
+// db_ is of type IDatabaseService&, but receives DatabaseService object
+// Method calls are resolved at runtime through virtual function dispatch
+void registerFlow() {
+    if (db_.userExists(username)) { ... }
+    db_.createUser(...);
+}
+\end{lstlisting}
+
+The \texttt{VotingApp} class operates on the \texttt{IDatabaseService} interface, but at runtime, calls are dispatched to the concrete \texttt{DatabaseService} implementation. This enables flexibility to swap implementations without modifying client code.
+
+\section{Results and Evaluation}
+
+\subsection{Functional Testing}
+The system was tested with the following scenarios:
+\begin{itemize}
+    \item User registration with valid OTP
+    \item User registration with invalid OTP (rejected)
+    \item User login with correct credentials
+    \item User login with incorrect credentials (rejected)
+    \item Vote casting by eligible users
+    \item Attempted vote by underage users (rejected)
+    \item Attempted duplicate voting (rejected)
+    \item Results display functionality
+\end{itemize}
+
+All test cases passed successfully, demonstrating correct implementation of business logic and security constraints.
+
+\subsection{Performance Considerations}
+The system demonstrates efficient resource management through:
+\begin{itemize}
+    \item Use of prepared statements for database queries (reduced parsing overhead)
+    \item Smart pointer usage eliminates memory leaks
+    \item Connection pooling capabilities through MySQL Connector
+    \item Asynchronous API calls potential (future enhancement)
+\end{itemize}
+
+\subsection{Code Quality Metrics}
+The object-oriented design provides:
+\begin{itemize}
+    \item \textbf{Maintainability}: Clear separation of concerns with single responsibility principle
+    \item \textbf{Extensibility}: Interface-based design allows adding new database implementations
+    \item \textbf{Testability}: Dependency injection enables unit testing with mock objects
+    \item \textbf{Reusability}: Service classes can be reused in other applications
+\end{itemize}
+
+\section{Discussion}
+
+\subsection{Design Pattern Benefits}
+The interface-based design pattern provides several advantages:
+
+\begin{enumerate}
+    \item \textbf{Extensibility}: New database implementations (e.g., PostgreSQL, SQLite) can be added by creating new classes inheriting from \texttt{IDatabaseService}
+    \item \textbf{Testability}: Mock database services can be created for unit testing without requiring actual database connections
+    \item \textbf{Maintainability}: Changes to database implementation do not affect client code
+    \item \textbf{Flexibility}: Database backend can be swapped at runtime or compile-time
+\end{enumerate}
+
+\subsection{Limitations and Future Work}
+Current limitations include:
+\begin{itemize}
+    \item Single-threaded execution model
+    \item No support for concurrent voting sessions
+    \item Limited error recovery mechanisms
+    \item No encryption of sensitive data at rest
+\end{itemize}
+
+Future enhancements could include:
+\begin{itemize}
+    \item Multi-threading support for concurrent operations
+    \item Blockchain integration for vote immutability
+    \item Advanced encryption for sensitive data
+    \item Web-based user interface
+    \item Real-time vote counting and visualization
+    \item Audit logging and compliance features
+\end{itemize}
+
+\section{Conclusion}
+This paper presented an object-oriented design and implementation of a secure electronic voting system. The system successfully demonstrates key OOP principles including inheritance, polymorphism, encapsulation, and composition. The interface-based architecture provides extensibility and maintainability, while integration with MySQL and Twilio services ensures robust data management and secure authentication.
+
+The implementation serves as a practical example of applying modern C++ features and design patterns to real-world applications. The modular design allows for future enhancements and demonstrates best practices in software engineering.
+
+The system successfully integrates database operations with external API services, achieving secure user authentication and vote recording functionality. The object-oriented approach provides a solid foundation for building scalable and maintainable voting systems.
+
+\section*{Acknowledgment}
+The authors would like to acknowledge the open-source community for providing excellent libraries including MySQL Connector/C++, CPR, and nlohmann/json that made this implementation possible.
+
+\begin{thebibliography}{00}
+\bibitem{ref1} A. Author, "Cryptographic Security in Electronic Voting," \textit{IEEE Trans. Security}, vol. 1, no. 1, pp. 1--10, 2020.
+\bibitem{ref2} B. Author, "Blockchain-Based Voting Systems," \textit{Proc. IEEE Conf. Blockchain}, 2021, pp. 100--110.
+\bibitem{ref3} C. Author, "Usability in Electronic Voting Interfaces," \textit{IEEE Trans. HCI}, vol. 5, no. 2, pp. 50--60, 2019.
+\bibitem{ref4} MySQL Documentation, "MySQL Connector/C++ Developer Guide," Oracle Corporation, 2023. [Online]. Available: https://dev.mysql.com/doc/connector-cpp/
+\bibitem{ref5} Twilio Documentation, "Twilio Verify API," Twilio Inc., 2023. [Online]. Available: https://www.twilio.com/docs/verify
+\end{thebibliography}
+
+\end{document}
+

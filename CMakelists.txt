@@ -1,0 +1,36 @@
+cmake_minimum_required(VERSION 3.10)
+project(voting_system)
+
+set(CMAKE_CXX_STANDARD 17)
+
+# Find vcpkg toolchain
+if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+endif()
+
+# Include directories
+include_directories(
+    ${CMAKE_SOURCE_DIR}
+    "C:/Program Files/MySQL/MySQL Connector C++ 9.5/include"
+    "${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-windows/include"
+)
+
+# Link directories
+link_directories(
+    "C:/Program Files/MySQL/MySQL Connector C++ 9.5/lib64/vs14"
+    "${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-windows/lib"
+)
+
+# Add executable
+add_executable(voting_system main.cpp)
+
+# Find packages (if using vcpkg)
+find_package(cpr CONFIG QUIET)
+find_package(nlohmann_json CONFIG QUIET)
+
+# Link libraries
+target_link_libraries(voting_system
+    mysqlcppconn
+    cpr::cpr
+    nlohmann_json::nlohmann_json
+)

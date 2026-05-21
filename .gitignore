@@ -1,0 +1,56 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# SQLite Database files
+*.db
+*.db-journal
+*.db-wal
+
+# CMake build files
+/build/
+/buildcd/
+/out/
+/CMakeSettings.json
+/CMakeUserPresets.json
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+
+# vcpkg local installations and downloads (keep vcpkg.json only)
+/vcpkg/
+
+# Local settings / environment variables
+.env
+.env.*
+.vscode/
